@@ -1,0 +1,961 @@
+2025-09-25 12:26:59 Train INFO: Using torch version: 2.0.1, CUDA version: 11.8
+2025-09-25 12:27:00 Train INFO: Config: 
+annotation_path = '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/thumos_14_anno.json'
+block_list = None
+chunk_num = 48
+class_map = '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/category_idx.txt'
+data_path = '/nvme3/stu04/OpenTAD-main/data/thumos-14/raw_data/video'
+dataset = dict(
+    test=dict(
+        ann_file=
+        '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/thumos_14_anno.json',
+        block_list=None,
+        class_map=
+        '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/category_idx.txt',
+        data_path='/nvme3/stu04/OpenTAD-main/data/thumos-14/raw_data/video',
+        feature_stride=4,
+        filter_gt=False,
+        pipeline=[
+            dict(format='mp4', type='PrepareVideoInfo'),
+            dict(num_threads=4, type='mmaction.DecordInit'),
+            dict(
+                method='sliding_window',
+                num_clips=1,
+                scale_factor=1,
+                type='LoadFrames'),
+            dict(type='mmaction.DecordDecode'),
+            dict(scale=(
+                -1,
+                160,
+            ), type='mmaction.Resize'),
+            dict(crop_size=160, type='mmaction.CenterCrop'),
+            dict(input_format='NCTHW', type='mmaction.FormatShape'),
+            dict(
+                keys=[
+                    'imgs',
+                    'gt_segments',
+                    'gt_labels',
+                ],
+                type='ConvertToTensor'),
+            dict(
+                inputs='imgs',
+                keys=[
+                    'masks',
+                    'gt_segments',
+                    'gt_labels',
+                    'gt_labels_text',
+                ],
+                type='Collect'),
+        ],
+        sample_stride=1,
+        subset_name='validation',
+        test_mode=True,
+        type='ThumosSlidingDataset',
+        window_overlap_ratio=0.5,
+        window_size=768),
+    train=dict(
+        ann_file=
+        '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/thumos_14_anno.json',
+        block_list=None,
+        class_map=
+        '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/category_idx.txt',
+        data_path='/nvme3/stu04/OpenTAD-main/data/thumos-14/raw_data/video',
+        feature_stride=4,
+        filter_gt=False,
+        pipeline=[
+            dict(format='mp4', type='PrepareVideoInfo'),
+            dict(num_threads=4, type='mmaction.DecordInit'),
+            dict(
+                crop_ratio=[
+                    0.9,
+                    1.0,
+                ],
+                method='random_trunc',
+                num_clips=1,
+                scale_factor=1,
+                trunc_len=768,
+                trunc_thresh=0.75,
+                type='LoadFrames'),
+            dict(type='mmaction.DecordDecode'),
+            dict(scale=(
+                -1,
+                182,
+            ), type='mmaction.Resize'),
+            dict(type='mmaction.RandomResizedCrop'),
+            dict(keep_ratio=False, scale=(
+                160,
+                160,
+            ), type='mmaction.Resize'),
+            dict(flip_ratio=0.5, type='mmaction.Flip'),
+            dict(transforms='default', type='mmaction.ImgAug'),
+            dict(type='mmaction.ColorJitter'),
+            dict(input_format='NCTHW', type='mmaction.FormatShape'),
+            dict(
+                keys=[
+                    'imgs',
+                    'gt_segments',
+                    'gt_labels',
+                ],
+                type='ConvertToTensor'),
+            dict(
+                inputs='imgs',
+                keys=[
+                    'masks',
+                    'gt_segments',
+                    'gt_labels',
+                    'gt_labels_text',
+                ],
+                type='Collect'),
+        ],
+        sample_stride=1,
+        subset_name='training',
+        type='ThumosPaddingDataset'),
+    val=dict(
+        ann_file=
+        '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/thumos_14_anno.json',
+        block_list=None,
+        class_map=
+        '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/category_idx.txt',
+        data_path='/nvme3/stu04/OpenTAD-main/data/thumos-14/raw_data/video',
+        feature_stride=4,
+        filter_gt=False,
+        pipeline=[
+            dict(format='mp4', type='PrepareVideoInfo'),
+            dict(num_threads=4, type='mmaction.DecordInit'),
+            dict(
+                method='sliding_window',
+                num_clips=1,
+                scale_factor=1,
+                type='LoadFrames'),
+            dict(type='mmaction.DecordDecode'),
+            dict(scale=(
+                -1,
+                160,
+            ), type='mmaction.Resize'),
+            dict(crop_size=160, type='mmaction.CenterCrop'),
+            dict(input_format='NCTHW', type='mmaction.FormatShape'),
+            dict(
+                keys=[
+                    'imgs',
+                    'gt_segments',
+                    'gt_labels',
+                ],
+                type='ConvertToTensor'),
+            dict(
+                inputs='imgs',
+                keys=[
+                    'masks',
+                    'gt_segments',
+                    'gt_labels',
+                ],
+                type='Collect'),
+        ],
+        sample_stride=1,
+        subset_name='validation',
+        type='ThumosSlidingDataset',
+        window_overlap_ratio=0.25,
+        window_size=768))
+evaluation = dict(
+    ground_truth_filename=
+    '/nvme3/stu04/OpenTAD-main/data/thumos-14/annotations/thumos_14_anno.json',
+    subset='validation',
+    tiou_thresholds=[
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+    ],
+    type='mAP')
+inference = dict(load_from_raw_predictions=False, save_raw_prediction=False)
+model = dict(
+    backbone=dict(
+        backbone=dict(
+            adapter_index=[
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+            ],
+            depth=12,
+            drop_path_rate=0.1,
+            embed_dims=768,
+            img_size=224,
+            mlp_ratio=4,
+            norm_cfg=dict(eps=1e-06, type='LN'),
+            num_frames=16,
+            num_heads=12,
+            patch_size=16,
+            qkv_bias=True,
+            return_feat_map=True,
+            total_frames=768,
+            type='VisionTransformerAdapter',
+            with_cp=True),
+        custom=dict(
+            freeze_backbone=False,
+            norm_eval=False,
+            post_processing_pipeline=[
+                dict(
+                    keys=[
+                        'feats',
+                    ],
+                    ops='b n c t h w -> b c t',
+                    reduction='mean',
+                    type='Reduce'),
+                dict(
+                    keys=[
+                        'feats',
+                    ],
+                    ops='(b t1) c t -> b c (t1 t)',
+                    t1=48,
+                    type='Rearrange'),
+                dict(keys=[
+                    'feats',
+                ], size=768, type='Interpolate'),
+            ],
+            post_processing_pipeline_text=[
+                dict(
+                    keys=[
+                        'feats',
+                    ],
+                    ops='b n c t h w -> b c t',
+                    reduction='mean',
+                    type='Reduce'),
+                dict(
+                    keys=[
+                        'feats',
+                    ],
+                    ops='(b t2) c t -> b c (t2 t)',
+                    t2=128,
+                    type='Rearrange'),
+                dict(keys=[
+                    'feats',
+                ], size=768, type='Interpolate'),
+            ],
+            pre_processing_pipeline=[
+                dict(
+                    keys=[
+                        'frames',
+                    ],
+                    ops='b n c (t1 t) h w -> (b t1) n c t h w',
+                    t1=48,
+                    type='Rearrange'),
+            ],
+            pre_processing_pipeline_text=[
+                dict(
+                    keys=[
+                        'text_frames',
+                    ],
+                    ops='b n c (t2 t) h w -> (b t2) n c t h w',
+                    t2=128,
+                    type='Rearrange'),
+            ],
+            pretrain=
+            '/nvme3/stu04/OpenTAD-main/configs/adatad/pretrained/vit-base-p16_videomae-k400-pre_16x4x1_kinetics-400_20221013-860a3cd3.pth'
+        ),
+        data_preprocessor=dict(
+            format_shape='NCTHW',
+            mean=[
+                123.675,
+                116.28,
+                103.53,
+            ],
+            std=[
+                58.395,
+                57.12,
+                57.375,
+            ],
+            type='mmaction.ActionDataPreprocessor'),
+        git_backbone=dict(
+            lora=False,
+            lora_alpha=32,
+            lora_dropout=0.1,
+            model_path='/nvme3/stu04/GenerativeImage2Text-main/git-base-vatex',
+            r=8),
+        type='mmaction.Recognizer3D'),
+    neck=dict(
+        in_channels=512, num_levels=6, out_channels=512, type='FPNIdentity'),
+    projection=dict(
+        arch=(
+            2,
+            2,
+            5,
+        ),
+        attn_cfg=dict(n_head=4, n_mha_win_size=-1),
+        conv_cfg=dict(kernel_size=3, proj_pdrop=0.0),
+        in_channels=768,
+        max_seq_len=768,
+        norm_cfg=dict(type='LN'),
+        out_channels=512,
+        path_pdrop=0.1,
+        type='Conv1DTransformerProj',
+        use_abs_pe=False),
+    rpn_head=dict(
+        center_sample='radius',
+        center_sample_radius=1.5,
+        cls_prior_prob=0.01,
+        feat_channels=512,
+        in_channels=512,
+        label_smoothing=0.0,
+        loss=dict(
+            cls_loss=dict(type='FocalLoss'), reg_loss=dict(type='DIOULoss')),
+        loss_normalizer=100,
+        loss_normalizer_momentum=0.9,
+        num_classes=20,
+        num_convs=2,
+        prior_generator=dict(
+            regression_range=[
+                (
+                    0,
+                    4,
+                ),
+                (
+                    4,
+                    8,
+                ),
+                (
+                    8,
+                    16,
+                ),
+                (
+                    16,
+                    32,
+                ),
+                (
+                    32,
+                    64,
+                ),
+                (
+                    64,
+                    10000,
+                ),
+            ],
+            strides=[
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+            ],
+            type='PointGenerator'),
+        type='ActionFormerHead'),
+    type='ActionFormer')
+optimizer = dict(
+    backbone=dict(
+        custom=[
+            dict(lr=0.0001, name='adapter', weight_decay=0.05),
+            dict(
+                lr=0.0001,
+                name='verb_guided_cross_attention',
+                weight_decay=0.05),
+        ],
+        exclude=[
+            'backbone',
+        ],
+        lr=0,
+        weight_decay=0),
+    git_backbone=dict(
+        custom=[
+            dict(lr=0.0001, name='lora', weight_decay=0.05),
+        ],
+        exclude=[
+            'git_backbone',
+        ],
+        lr=0,
+        weight_decay=0),
+    lr=0.0001,
+    paramwise=True,
+    type='AdamW',
+    weight_decay=0.05)
+post_processing = dict(
+    nms=dict(
+        max_seg_num=2000,
+        multiclass=True,
+        sigma=0.7,
+        use_soft_nms=True,
+        voting_thresh=0.7),
+    save_dict=True)
+scale_factor = 1
+scheduler = dict(
+    max_epoch=100, type='LinearWarmupCosineAnnealingLR', warmup_epoch=5)
+solver = dict(
+    amp=True,
+    clip_grad_norm=1,
+    ema=True,
+    fp16_compress=True,
+    static_graph=True,
+    test=dict(batch_size=2, num_workers=2),
+    train=dict(batch_size=2, num_workers=2),
+    val=dict(batch_size=2, num_workers=2))
+window_size = 768
+work_dir = 'exps/thumos/open-git/对齐标签_null=0_emb_cross_Linear_gtf_B/gpu2_id0/'
+workflow = dict(
+    checkpoint_interval=2,
+    end_epoch=70,
+    logging_interval=50,
+    val_eval_interval=1,
+    val_loss_interval=-1,
+    val_start_epoch=40)
+
+2025-09-25 12:27:01 Train INFO: training subset: 200 videos
+2025-09-25 12:27:01 Train INFO: validation subset: 211 videos, truncated as 487 windows.
+2025-09-25 12:27:01 Train INFO: validation subset: 211 videos, truncated as 744 windows.
+2025-09-25 12:27:04 Train INFO: Using DDP with total 2 GPUS...
+2025-09-25 12:27:04 Train INFO: Using FP16 compression ...
+2025-09-25 12:27:04 Train INFO: Using Model EMA...
+2025-09-25 12:27:04 Train INFO: Using Automatic Mixed Precision...
+2025-09-25 12:27:04 Train INFO: Training Starts...
+
+2025-09-25 12:27:04 Train INFO: [Train]: Epoch 0 started
+2025-09-25 12:29:06 Train INFO: [Train]: [000][00050/00099]  Loss=1.2716  cls_loss=0.8439  reg_loss=0.4277  lr_backbone=1.0e-05  lr_det=1.0e-05  mem=7010MB
+2025-09-25 12:30:57 Train INFO: [Train]: [000][00099/00099]  Loss=1.2147  cls_loss=0.8427  reg_loss=0.3720  lr_backbone=2.0e-05  lr_det=2.0e-05  mem=7010MB
+2025-09-25 12:30:58 Train INFO: [Train]: Epoch 1 started
+2025-09-25 12:32:56 Train INFO: [Train]: [001][00050/00099]  Loss=0.9238  cls_loss=0.6229  reg_loss=0.3010  lr_backbone=3.0e-05  lr_det=3.0e-05  mem=7010MB
+2025-09-25 12:34:52 Train INFO: [Train]: [001][00099/00099]  Loss=0.9234  cls_loss=0.6120  reg_loss=0.3114  lr_backbone=4.0e-05  lr_det=4.0e-05  mem=7010MB
+2025-09-25 12:34:57 Train INFO: [Train]: Epoch 2 started
+2025-09-25 12:36:54 Train INFO: [Train]: [002][00050/00099]  Loss=0.9002  cls_loss=0.5626  reg_loss=0.3376  lr_backbone=5.0e-05  lr_det=5.0e-05  mem=7010MB
+2025-09-25 12:38:54 Train INFO: [Train]: [002][00099/00099]  Loss=0.9314  cls_loss=0.5948  reg_loss=0.3366  lr_backbone=6.0e-05  lr_det=6.0e-05  mem=7010MB
+2025-09-25 12:38:55 Train INFO: [Train]: Epoch 3 started
+2025-09-25 12:40:55 Train INFO: [Train]: [003][00050/00099]  Loss=0.8301  cls_loss=0.5123  reg_loss=0.3177  lr_backbone=7.0e-05  lr_det=7.0e-05  mem=7010MB
+2025-09-25 12:42:46 Train INFO: [Train]: [003][00099/00099]  Loss=0.8029  cls_loss=0.4990  reg_loss=0.3039  lr_backbone=8.0e-05  lr_det=8.0e-05  mem=7010MB
+2025-09-25 12:42:52 Train INFO: [Train]: Epoch 4 started
+2025-09-25 12:44:53 Train INFO: [Train]: [004][00050/00099]  Loss=0.9300  cls_loss=0.6046  reg_loss=0.3255  lr_backbone=9.0e-05  lr_det=9.0e-05  mem=7010MB
+2025-09-25 12:46:40 Train INFO: [Train]: [004][00099/00099]  Loss=0.8378  cls_loss=0.5323  reg_loss=0.3055  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:46:40 Train INFO: [Train]: Epoch 5 started
+2025-09-25 12:48:40 Train INFO: [Train]: [005][00050/00099]  Loss=0.7590  cls_loss=0.4651  reg_loss=0.2938  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:50:33 Train INFO: [Train]: [005][00099/00099]  Loss=0.8036  cls_loss=0.5049  reg_loss=0.2987  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:50:38 Train INFO: [Train]: Epoch 6 started
+2025-09-25 12:52:37 Train INFO: [Train]: [006][00050/00099]  Loss=0.7588  cls_loss=0.4737  reg_loss=0.2850  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:54:30 Train INFO: [Train]: [006][00099/00099]  Loss=0.6861  cls_loss=0.4184  reg_loss=0.2677  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:54:30 Train INFO: [Train]: Epoch 7 started
+2025-09-25 12:56:30 Train INFO: [Train]: [007][00050/00099]  Loss=0.6951  cls_loss=0.4136  reg_loss=0.2815  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:58:29 Train INFO: [Train]: [007][00099/00099]  Loss=0.6529  cls_loss=0.3882  reg_loss=0.2647  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 12:58:35 Train INFO: [Train]: Epoch 8 started
+2025-09-25 13:00:43 Train INFO: [Train]: [008][00050/00099]  Loss=0.6343  cls_loss=0.3758  reg_loss=0.2585  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 13:02:35 Train INFO: [Train]: [008][00099/00099]  Loss=0.5676  cls_loss=0.3302  reg_loss=0.2374  lr_backbone=1.0e-04  lr_det=1.0e-04  mem=7010MB
+2025-09-25 13:02:36 Train INFO: [Train]: Epoch 9 started
+2025-09-25 13:04:33 Train INFO: [Train]: [009][00050/00099]  Loss=0.5924  cls_loss=0.3388  reg_loss=0.2535  lr_backbone=9.9e-05  lr_det=9.9e-05  mem=7010MB
+2025-09-25 13:06:32 Train INFO: [Train]: [009][00099/00099]  Loss=0.6066  cls_loss=0.3548  reg_loss=0.2518  lr_backbone=9.9e-05  lr_det=9.9e-05  mem=7010MB
+2025-09-25 13:06:38 Train INFO: [Train]: Epoch 10 started
+2025-09-25 13:08:34 Train INFO: [Train]: [010][00050/00099]  Loss=0.6576  cls_loss=0.3967  reg_loss=0.2610  lr_backbone=9.9e-05  lr_det=9.9e-05  mem=7010MB
+2025-09-25 13:10:37 Train INFO: [Train]: [010][00099/00099]  Loss=0.6196  cls_loss=0.3747  reg_loss=0.2449  lr_backbone=9.9e-05  lr_det=9.9e-05  mem=7010MB
+2025-09-25 13:10:37 Train INFO: [Train]: Epoch 11 started
+2025-09-25 13:12:48 Train INFO: [Train]: [011][00050/00099]  Loss=0.5912  cls_loss=0.3487  reg_loss=0.2425  lr_backbone=9.9e-05  lr_det=9.9e-05  mem=7010MB
+2025-09-25 13:14:40 Train INFO: [Train]: [011][00099/00099]  Loss=0.5656  cls_loss=0.3340  reg_loss=0.2316  lr_backbone=9.9e-05  lr_det=9.9e-05  mem=7010MB
+2025-09-25 13:14:45 Train INFO: [Train]: Epoch 12 started
+2025-09-25 13:16:38 Train INFO: [Train]: [012][00050/00099]  Loss=0.6366  cls_loss=0.3655  reg_loss=0.2711  lr_backbone=9.8e-05  lr_det=9.8e-05  mem=7010MB
+2025-09-25 13:18:34 Train INFO: [Train]: [012][00099/00099]  Loss=0.6461  cls_loss=0.3756  reg_loss=0.2705  lr_backbone=9.8e-05  lr_det=9.8e-05  mem=7010MB
+2025-09-25 13:18:35 Train INFO: [Train]: Epoch 13 started
+2025-09-25 13:20:42 Train INFO: [Train]: [013][00050/00099]  Loss=0.5085  cls_loss=0.2872  reg_loss=0.2213  lr_backbone=9.8e-05  lr_det=9.8e-05  mem=7010MB
+2025-09-25 13:22:34 Train INFO: [Train]: [013][00099/00099]  Loss=0.5632  cls_loss=0.3260  reg_loss=0.2373  lr_backbone=9.8e-05  lr_det=9.8e-05  mem=7010MB
+2025-09-25 13:22:39 Train INFO: [Train]: Epoch 14 started
+2025-09-25 13:24:37 Train INFO: [Train]: [014][00050/00099]  Loss=0.4680  cls_loss=0.2607  reg_loss=0.2073  lr_backbone=9.8e-05  lr_det=9.8e-05  mem=7010MB
+2025-09-25 13:26:28 Train INFO: [Train]: [014][00099/00099]  Loss=0.5337  cls_loss=0.3039  reg_loss=0.2298  lr_backbone=9.7e-05  lr_det=9.7e-05  mem=7010MB
+2025-09-25 13:26:29 Train INFO: [Train]: Epoch 15 started
+2025-09-25 13:28:31 Train INFO: [Train]: [015][00050/00099]  Loss=0.5046  cls_loss=0.2923  reg_loss=0.2123  lr_backbone=9.7e-05  lr_det=9.7e-05  mem=7010MB
+2025-09-25 13:30:24 Train INFO: [Train]: [015][00099/00099]  Loss=0.5378  cls_loss=0.3080  reg_loss=0.2298  lr_backbone=9.7e-05  lr_det=9.7e-05  mem=7010MB
+2025-09-25 13:30:30 Train INFO: [Train]: Epoch 16 started
+2025-09-25 13:32:29 Train INFO: [Train]: [016][00050/00099]  Loss=0.6023  cls_loss=0.3518  reg_loss=0.2506  lr_backbone=9.6e-05  lr_det=9.6e-05  mem=7010MB
+2025-09-25 13:34:18 Train INFO: [Train]: [016][00099/00099]  Loss=0.5586  cls_loss=0.3229  reg_loss=0.2357  lr_backbone=9.6e-05  lr_det=9.6e-05  mem=7010MB
+2025-09-25 13:34:19 Train INFO: [Train]: Epoch 17 started
+2025-09-25 13:36:26 Train INFO: [Train]: [017][00050/00099]  Loss=0.4427  cls_loss=0.2465  reg_loss=0.1963  lr_backbone=9.6e-05  lr_det=9.6e-05  mem=7010MB
+2025-09-25 13:38:15 Train INFO: [Train]: [017][00099/00099]  Loss=0.4740  cls_loss=0.2643  reg_loss=0.2098  lr_backbone=9.5e-05  lr_det=9.5e-05  mem=7010MB
+2025-09-25 13:38:20 Train INFO: [Train]: Epoch 18 started
+2025-09-25 13:40:17 Train INFO: [Train]: [018][00050/00099]  Loss=0.5315  cls_loss=0.3093  reg_loss=0.2222  lr_backbone=9.5e-05  lr_det=9.5e-05  mem=7010MB
+2025-09-25 13:42:09 Train INFO: [Train]: [018][00099/00099]  Loss=0.5032  cls_loss=0.2898  reg_loss=0.2134  lr_backbone=9.5e-05  lr_det=9.5e-05  mem=7010MB
+2025-09-25 13:42:10 Train INFO: [Train]: Epoch 19 started
+2025-09-25 13:44:06 Train INFO: [Train]: [019][00050/00099]  Loss=0.5100  cls_loss=0.2877  reg_loss=0.2223  lr_backbone=9.4e-05  lr_det=9.4e-05  mem=7010MB
+2025-09-25 13:45:56 Train INFO: [Train]: [019][00099/00099]  Loss=0.5036  cls_loss=0.2850  reg_loss=0.2186  lr_backbone=9.4e-05  lr_det=9.4e-05  mem=7010MB
+2025-09-25 13:46:01 Train INFO: [Train]: Epoch 20 started
+2025-09-25 13:48:01 Train INFO: [Train]: [020][00050/00099]  Loss=0.4229  cls_loss=0.2373  reg_loss=0.1856  lr_backbone=9.4e-05  lr_det=9.4e-05  mem=7010MB
+2025-09-25 13:49:58 Train INFO: [Train]: [020][00099/00099]  Loss=0.4579  cls_loss=0.2523  reg_loss=0.2055  lr_backbone=9.3e-05  lr_det=9.3e-05  mem=7010MB
+2025-09-25 13:49:59 Train INFO: [Train]: Epoch 21 started
+2025-09-25 13:52:01 Train INFO: [Train]: [021][00050/00099]  Loss=0.4846  cls_loss=0.2851  reg_loss=0.1995  lr_backbone=9.3e-05  lr_det=9.3e-05  mem=7010MB
+2025-09-25 13:53:55 Train INFO: [Train]: [021][00099/00099]  Loss=0.5082  cls_loss=0.2929  reg_loss=0.2153  lr_backbone=9.2e-05  lr_det=9.2e-05  mem=7010MB
+2025-09-25 13:54:00 Train INFO: [Train]: Epoch 22 started
+2025-09-25 13:56:03 Train INFO: [Train]: [022][00050/00099]  Loss=0.4209  cls_loss=0.2392  reg_loss=0.1817  lr_backbone=9.2e-05  lr_det=9.2e-05  mem=7010MB
+2025-09-25 13:57:49 Train INFO: [Train]: [022][00099/00099]  Loss=0.4509  cls_loss=0.2479  reg_loss=0.2030  lr_backbone=9.1e-05  lr_det=9.1e-05  mem=7010MB
+2025-09-25 13:57:49 Train INFO: [Train]: Epoch 23 started
+2025-09-25 13:59:55 Train INFO: [Train]: [023][00050/00099]  Loss=0.4563  cls_loss=0.2578  reg_loss=0.1984  lr_backbone=9.1e-05  lr_det=9.1e-05  mem=7010MB
+2025-09-25 14:01:45 Train INFO: [Train]: [023][00099/00099]  Loss=0.4032  cls_loss=0.2255  reg_loss=0.1777  lr_backbone=9.0e-05  lr_det=9.0e-05  mem=7010MB
+2025-09-25 14:01:50 Train INFO: [Train]: Epoch 24 started
+2025-09-25 14:03:51 Train INFO: [Train]: [024][00050/00099]  Loss=0.5660  cls_loss=0.3072  reg_loss=0.2588  lr_backbone=9.0e-05  lr_det=9.0e-05  mem=7010MB
+2025-09-25 14:05:40 Train INFO: [Train]: [024][00099/00099]  Loss=0.5138  cls_loss=0.2794  reg_loss=0.2344  lr_backbone=8.9e-05  lr_det=8.9e-05  mem=7010MB
+2025-09-25 14:05:41 Train INFO: [Train]: Epoch 25 started
+2025-09-25 14:07:47 Train INFO: [Train]: [025][00050/00099]  Loss=0.4623  cls_loss=0.2526  reg_loss=0.2097  lr_backbone=8.9e-05  lr_det=8.9e-05  mem=7010MB
+2025-09-25 14:09:31 Train INFO: [Train]: [025][00099/00099]  Loss=0.5178  cls_loss=0.2789  reg_loss=0.2389  lr_backbone=8.8e-05  lr_det=8.8e-05  mem=7010MB
+2025-09-25 14:09:36 Train INFO: [Train]: Epoch 26 started
+2025-09-25 14:11:33 Train INFO: [Train]: [026][00050/00099]  Loss=0.3749  cls_loss=0.2027  reg_loss=0.1722  lr_backbone=8.8e-05  lr_det=8.8e-05  mem=7010MB
+2025-09-25 14:13:32 Train INFO: [Train]: [026][00099/00099]  Loss=0.4173  cls_loss=0.2294  reg_loss=0.1879  lr_backbone=8.7e-05  lr_det=8.7e-05  mem=7010MB
+2025-09-25 14:13:32 Train INFO: [Train]: Epoch 27 started
+2025-09-25 14:15:32 Train INFO: [Train]: [027][00050/00099]  Loss=0.5077  cls_loss=0.2757  reg_loss=0.2320  lr_backbone=8.7e-05  lr_det=8.7e-05  mem=7010MB
+2025-09-25 14:17:26 Train INFO: [Train]: [027][00099/00099]  Loss=0.5240  cls_loss=0.2891  reg_loss=0.2349  lr_backbone=8.6e-05  lr_det=8.6e-05  mem=7010MB
+2025-09-25 14:17:32 Train INFO: [Train]: Epoch 28 started
+2025-09-25 14:19:27 Train INFO: [Train]: [028][00050/00099]  Loss=0.4303  cls_loss=0.2411  reg_loss=0.1892  lr_backbone=8.6e-05  lr_det=8.6e-05  mem=7010MB
+2025-09-25 14:21:23 Train INFO: [Train]: [028][00099/00099]  Loss=0.4660  cls_loss=0.2591  reg_loss=0.2069  lr_backbone=8.5e-05  lr_det=8.5e-05  mem=7010MB
+2025-09-25 14:21:23 Train INFO: [Train]: Epoch 29 started
+2025-09-25 14:23:24 Train INFO: [Train]: [029][00050/00099]  Loss=0.4252  cls_loss=0.2320  reg_loss=0.1932  lr_backbone=8.4e-05  lr_det=8.4e-05  mem=7010MB
+2025-09-25 14:25:27 Train INFO: [Train]: [029][00099/00099]  Loss=0.4336  cls_loss=0.2384  reg_loss=0.1952  lr_backbone=8.4e-05  lr_det=8.4e-05  mem=7010MB
+2025-09-25 14:25:33 Train INFO: [Train]: Epoch 30 started
+2025-09-25 14:27:36 Train INFO: [Train]: [030][00050/00099]  Loss=0.4173  cls_loss=0.2356  reg_loss=0.1816  lr_backbone=8.3e-05  lr_det=8.3e-05  mem=7010MB
+2025-09-25 14:29:33 Train INFO: [Train]: [030][00099/00099]  Loss=0.4174  cls_loss=0.2278  reg_loss=0.1896  lr_backbone=8.3e-05  lr_det=8.3e-05  mem=7010MB
+2025-09-25 14:29:33 Train INFO: [Train]: Epoch 31 started
+2025-09-25 14:31:33 Train INFO: [Train]: [031][00050/00099]  Loss=0.4175  cls_loss=0.2247  reg_loss=0.1927  lr_backbone=8.2e-05  lr_det=8.2e-05  mem=7010MB
+2025-09-25 14:33:24 Train INFO: [Train]: [031][00099/00099]  Loss=0.4097  cls_loss=0.2199  reg_loss=0.1898  lr_backbone=8.1e-05  lr_det=8.1e-05  mem=7010MB
+2025-09-25 14:33:30 Train INFO: [Train]: Epoch 32 started
+2025-09-25 14:35:28 Train INFO: [Train]: [032][00050/00099]  Loss=0.3786  cls_loss=0.2018  reg_loss=0.1768  lr_backbone=8.1e-05  lr_det=8.1e-05  mem=7010MB
+2025-09-25 14:37:15 Train INFO: [Train]: [032][00099/00099]  Loss=0.3813  cls_loss=0.2039  reg_loss=0.1774  lr_backbone=8.0e-05  lr_det=8.0e-05  mem=7010MB
+2025-09-25 14:37:15 Train INFO: [Train]: Epoch 33 started
+2025-09-25 14:39:21 Train INFO: [Train]: [033][00050/00099]  Loss=0.3589  cls_loss=0.1895  reg_loss=0.1694  lr_backbone=7.9e-05  lr_det=7.9e-05  mem=7010MB
+2025-09-25 14:41:17 Train INFO: [Train]: [033][00099/00099]  Loss=0.4011  cls_loss=0.2146  reg_loss=0.1865  lr_backbone=7.9e-05  lr_det=7.9e-05  mem=7010MB
+2025-09-25 14:41:22 Train INFO: [Train]: Epoch 34 started
+2025-09-25 14:43:13 Train INFO: [Train]: [034][00050/00099]  Loss=0.4763  cls_loss=0.2580  reg_loss=0.2183  lr_backbone=7.8e-05  lr_det=7.8e-05  mem=7010MB
+2025-09-25 14:45:05 Train INFO: [Train]: [034][00099/00099]  Loss=0.4539  cls_loss=0.2446  reg_loss=0.2094  lr_backbone=7.7e-05  lr_det=7.7e-05  mem=7010MB
+2025-09-25 14:45:05 Train INFO: [Train]: Epoch 35 started
+2025-09-25 14:47:13 Train INFO: [Train]: [035][00050/00099]  Loss=0.3497  cls_loss=0.1889  reg_loss=0.1608  lr_backbone=7.7e-05  lr_det=7.7e-05  mem=7010MB
+2025-09-25 14:49:05 Train INFO: [Train]: [035][00099/00099]  Loss=0.3996  cls_loss=0.2180  reg_loss=0.1816  lr_backbone=7.6e-05  lr_det=7.6e-05  mem=7010MB
+2025-09-25 14:49:10 Train INFO: [Train]: Epoch 36 started
+2025-09-25 14:51:12 Train INFO: [Train]: [036][00050/00099]  Loss=0.4181  cls_loss=0.2274  reg_loss=0.1907  lr_backbone=7.5e-05  lr_det=7.5e-05  mem=7010MB
+2025-09-25 14:53:04 Train INFO: [Train]: [036][00099/00099]  Loss=0.3935  cls_loss=0.2091  reg_loss=0.1844  lr_backbone=7.5e-05  lr_det=7.5e-05  mem=7010MB
+2025-09-25 14:53:04 Train INFO: [Train]: Epoch 37 started
+2025-09-25 14:55:04 Train INFO: [Train]: [037][00050/00099]  Loss=0.4496  cls_loss=0.2467  reg_loss=0.2029  lr_backbone=7.4e-05  lr_det=7.4e-05  mem=7010MB
+2025-09-25 14:56:54 Train INFO: [Train]: [037][00099/00099]  Loss=0.4489  cls_loss=0.2433  reg_loss=0.2056  lr_backbone=7.3e-05  lr_det=7.3e-05  mem=7010MB
+2025-09-25 14:56:59 Train INFO: [Train]: Epoch 38 started
+2025-09-25 14:59:06 Train INFO: [Train]: [038][00050/00099]  Loss=0.3936  cls_loss=0.2147  reg_loss=0.1789  lr_backbone=7.2e-05  lr_det=7.2e-05  mem=7010MB
+2025-09-25 15:00:57 Train INFO: [Train]: [038][00099/00099]  Loss=0.3857  cls_loss=0.2078  reg_loss=0.1779  lr_backbone=7.2e-05  lr_det=7.2e-05  mem=7010MB
+2025-09-25 15:00:57 Train INFO: [Train]: Epoch 39 started
+2025-09-25 15:02:52 Train INFO: [Train]: [039][00050/00099]  Loss=0.3253  cls_loss=0.1720  reg_loss=0.1532  lr_backbone=7.1e-05  lr_det=7.1e-05  mem=7010MB
+2025-09-25 15:04:53 Train INFO: [Train]: [039][00099/00099]  Loss=0.3750  cls_loss=0.1986  reg_loss=0.1764  lr_backbone=7.0e-05  lr_det=7.0e-05  mem=7010MB
+2025-09-25 15:04:59 Train INFO: [Train]: Epoch 40 started
+2025-09-25 15:07:06 Train INFO: [Train]: [040][00050/00099]  Loss=0.3935  cls_loss=0.2065  reg_loss=0.1870  lr_backbone=6.9e-05  lr_det=6.9e-05  mem=7010MB
+2025-09-25 15:08:57 Train INFO: [Train]: [040][00099/00099]  Loss=0.4018  cls_loss=0.2137  reg_loss=0.1881  lr_backbone=6.9e-05  lr_det=6.9e-05  mem=7010MB
+2025-09-25 15:22:00 Train INFO: Evaluation starts...
+2025-09-25 15:22:22 Train INFO: Loaded annotations from validation subset.
+2025-09-25 15:22:22 Train INFO: Number of ground truth instances: 3325
+2025-09-25 15:22:22 Train INFO: Number of predictions: 422000
+2025-09-25 15:22:22 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 15:22:22 Train INFO: Average-mAP: 72.23 (%)
+2025-09-25 15:22:22 Train INFO: mAP at tIoU 0.30 is 88.09%
+2025-09-25 15:22:22 Train INFO: mAP at tIoU 0.40 is 84.02%
+2025-09-25 15:22:22 Train INFO: mAP at tIoU 0.50 is 76.00%
+2025-09-25 15:22:22 Train INFO: mAP at tIoU 0.60 is 64.19%
+2025-09-25 15:22:22 Train INFO: mAP at tIoU 0.70 is 48.84%
+2025-09-25 15:22:23 Train INFO: [Train]: Epoch 41 started
+2025-09-25 15:24:22 Train INFO: [Train]: [041][00050/00099]  Loss=0.3730  cls_loss=0.1933  reg_loss=0.1797  lr_backbone=6.8e-05  lr_det=6.8e-05  mem=7010MB
+2025-09-25 15:26:15 Train INFO: [Train]: [041][00099/00099]  Loss=0.3698  cls_loss=0.1929  reg_loss=0.1769  lr_backbone=6.7e-05  lr_det=6.7e-05  mem=7010MB
+2025-09-25 15:39:18 Train INFO: Evaluation starts...
+2025-09-25 15:39:40 Train INFO: Loaded annotations from validation subset.
+2025-09-25 15:39:40 Train INFO: Number of ground truth instances: 3325
+2025-09-25 15:39:40 Train INFO: Number of predictions: 422000
+2025-09-25 15:39:40 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 15:39:40 Train INFO: Average-mAP: 72.30 (%)
+2025-09-25 15:39:40 Train INFO: mAP at tIoU 0.30 is 88.14%
+2025-09-25 15:39:40 Train INFO: mAP at tIoU 0.40 is 84.04%
+2025-09-25 15:39:40 Train INFO: mAP at tIoU 0.50 is 76.18%
+2025-09-25 15:39:40 Train INFO: mAP at tIoU 0.60 is 64.00%
+2025-09-25 15:39:40 Train INFO: mAP at tIoU 0.70 is 49.12%
+2025-09-25 15:39:41 Train INFO: [Train]: Epoch 42 started
+2025-09-25 15:41:38 Train INFO: [Train]: [042][00050/00099]  Loss=0.4107  cls_loss=0.2130  reg_loss=0.1977  lr_backbone=6.6e-05  lr_det=6.6e-05  mem=7010MB
+2025-09-25 15:43:37 Train INFO: [Train]: [042][00099/00099]  Loss=0.4019  cls_loss=0.2118  reg_loss=0.1902  lr_backbone=6.5e-05  lr_det=6.5e-05  mem=7010MB
+2025-09-25 15:56:41 Train INFO: Evaluation starts...
+2025-09-25 15:57:03 Train INFO: Loaded annotations from validation subset.
+2025-09-25 15:57:03 Train INFO: Number of ground truth instances: 3325
+2025-09-25 15:57:03 Train INFO: Number of predictions: 422000
+2025-09-25 15:57:03 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 15:57:03 Train INFO: Average-mAP: 72.28 (%)
+2025-09-25 15:57:03 Train INFO: mAP at tIoU 0.30 is 88.15%
+2025-09-25 15:57:03 Train INFO: mAP at tIoU 0.40 is 84.06%
+2025-09-25 15:57:03 Train INFO: mAP at tIoU 0.50 is 76.18%
+2025-09-25 15:57:03 Train INFO: mAP at tIoU 0.60 is 63.82%
+2025-09-25 15:57:03 Train INFO: mAP at tIoU 0.70 is 49.19%
+2025-09-25 15:57:04 Train INFO: [Train]: Epoch 43 started
+2025-09-25 15:59:01 Train INFO: [Train]: [043][00050/00099]  Loss=0.3711  cls_loss=0.1902  reg_loss=0.1809  lr_backbone=6.5e-05  lr_det=6.5e-05  mem=7010MB
+2025-09-25 16:00:53 Train INFO: [Train]: [043][00099/00099]  Loss=0.3629  cls_loss=0.1891  reg_loss=0.1738  lr_backbone=6.4e-05  lr_det=6.4e-05  mem=7010MB
+2025-09-25 16:13:52 Train INFO: Evaluation starts...
+2025-09-25 16:14:13 Train INFO: Loaded annotations from validation subset.
+2025-09-25 16:14:13 Train INFO: Number of ground truth instances: 3325
+2025-09-25 16:14:13 Train INFO: Number of predictions: 422000
+2025-09-25 16:14:13 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 16:14:13 Train INFO: Average-mAP: 72.35 (%)
+2025-09-25 16:14:13 Train INFO: mAP at tIoU 0.30 is 88.16%
+2025-09-25 16:14:13 Train INFO: mAP at tIoU 0.40 is 83.98%
+2025-09-25 16:14:13 Train INFO: mAP at tIoU 0.50 is 76.34%
+2025-09-25 16:14:13 Train INFO: mAP at tIoU 0.60 is 63.85%
+2025-09-25 16:14:13 Train INFO: mAP at tIoU 0.70 is 49.42%
+2025-09-25 16:14:14 Train INFO: [Train]: Epoch 44 started
+2025-09-25 16:16:18 Train INFO: [Train]: [044][00050/00099]  Loss=0.4113  cls_loss=0.2143  reg_loss=0.1970  lr_backbone=6.3e-05  lr_det=6.3e-05  mem=7010MB
+2025-09-25 16:18:10 Train INFO: [Train]: [044][00099/00099]  Loss=0.4045  cls_loss=0.2104  reg_loss=0.1941  lr_backbone=6.2e-05  lr_det=6.2e-05  mem=7010MB
+2025-09-25 16:31:08 Train INFO: Evaluation starts...
+2025-09-25 16:31:30 Train INFO: Loaded annotations from validation subset.
+2025-09-25 16:31:30 Train INFO: Number of ground truth instances: 3325
+2025-09-25 16:31:30 Train INFO: Number of predictions: 422000
+2025-09-25 16:31:30 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 16:31:30 Train INFO: Average-mAP: 72.50 (%)
+2025-09-25 16:31:30 Train INFO: mAP at tIoU 0.30 is 88.19%
+2025-09-25 16:31:30 Train INFO: mAP at tIoU 0.40 is 84.24%
+2025-09-25 16:31:30 Train INFO: mAP at tIoU 0.50 is 76.78%
+2025-09-25 16:31:30 Train INFO: mAP at tIoU 0.60 is 63.87%
+2025-09-25 16:31:30 Train INFO: mAP at tIoU 0.70 is 49.42%
+2025-09-25 16:31:30 Train INFO: [Train]: Epoch 45 started
+2025-09-25 16:33:31 Train INFO: [Train]: [045][00050/00099]  Loss=0.3540  cls_loss=0.1874  reg_loss=0.1666  lr_backbone=6.1e-05  lr_det=6.1e-05  mem=7010MB
+2025-09-25 16:35:29 Train INFO: [Train]: [045][00099/00099]  Loss=0.3412  cls_loss=0.1813  reg_loss=0.1599  lr_backbone=6.1e-05  lr_det=6.1e-05  mem=7010MB
+2025-09-25 16:48:29 Train INFO: Evaluation starts...
+2025-09-25 16:48:50 Train INFO: Loaded annotations from validation subset.
+2025-09-25 16:48:50 Train INFO: Number of ground truth instances: 3325
+2025-09-25 16:48:50 Train INFO: Number of predictions: 422000
+2025-09-25 16:48:50 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 16:48:50 Train INFO: Average-mAP: 72.55 (%)
+2025-09-25 16:48:50 Train INFO: mAP at tIoU 0.30 is 88.21%
+2025-09-25 16:48:50 Train INFO: mAP at tIoU 0.40 is 84.25%
+2025-09-25 16:48:50 Train INFO: mAP at tIoU 0.50 is 76.92%
+2025-09-25 16:48:50 Train INFO: mAP at tIoU 0.60 is 63.89%
+2025-09-25 16:48:50 Train INFO: mAP at tIoU 0.70 is 49.49%
+2025-09-25 16:48:51 Train INFO: [Train]: Epoch 46 started
+2025-09-25 16:50:50 Train INFO: [Train]: [046][00050/00099]  Loss=0.3772  cls_loss=0.1993  reg_loss=0.1779  lr_backbone=6.0e-05  lr_det=6.0e-05  mem=7010MB
+2025-09-25 16:52:48 Train INFO: [Train]: [046][00099/00099]  Loss=0.3868  cls_loss=0.2016  reg_loss=0.1852  lr_backbone=5.9e-05  lr_det=5.9e-05  mem=7010MB
+2025-09-25 17:05:58 Train INFO: Evaluation starts...
+2025-09-25 17:06:20 Train INFO: Loaded annotations from validation subset.
+2025-09-25 17:06:20 Train INFO: Number of ground truth instances: 3325
+2025-09-25 17:06:20 Train INFO: Number of predictions: 422000
+2025-09-25 17:06:20 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 17:06:20 Train INFO: Average-mAP: 72.53 (%)
+2025-09-25 17:06:20 Train INFO: mAP at tIoU 0.30 is 88.20%
+2025-09-25 17:06:20 Train INFO: mAP at tIoU 0.40 is 84.23%
+2025-09-25 17:06:20 Train INFO: mAP at tIoU 0.50 is 76.96%
+2025-09-25 17:06:20 Train INFO: mAP at tIoU 0.60 is 63.98%
+2025-09-25 17:06:20 Train INFO: mAP at tIoU 0.70 is 49.28%
+2025-09-25 17:06:20 Train INFO: [Train]: Epoch 47 started
+2025-09-25 17:08:23 Train INFO: [Train]: [047][00050/00099]  Loss=0.3547  cls_loss=0.1917  reg_loss=0.1630  lr_backbone=5.8e-05  lr_det=5.8e-05  mem=7010MB
+2025-09-25 17:10:17 Train INFO: [Train]: [047][00099/00099]  Loss=0.4002  cls_loss=0.2158  reg_loss=0.1844  lr_backbone=5.7e-05  lr_det=5.7e-05  mem=7010MB
+2025-09-25 17:23:25 Train INFO: Evaluation starts...
+2025-09-25 17:23:46 Train INFO: Loaded annotations from validation subset.
+2025-09-25 17:23:46 Train INFO: Number of ground truth instances: 3325
+2025-09-25 17:23:46 Train INFO: Number of predictions: 422000
+2025-09-25 17:23:46 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 17:23:46 Train INFO: Average-mAP: 72.45 (%)
+2025-09-25 17:23:46 Train INFO: mAP at tIoU 0.30 is 88.14%
+2025-09-25 17:23:46 Train INFO: mAP at tIoU 0.40 is 84.00%
+2025-09-25 17:23:46 Train INFO: mAP at tIoU 0.50 is 76.76%
+2025-09-25 17:23:46 Train INFO: mAP at tIoU 0.60 is 63.97%
+2025-09-25 17:23:46 Train INFO: mAP at tIoU 0.70 is 49.37%
+2025-09-25 17:23:47 Train INFO: [Train]: Epoch 48 started
+2025-09-25 17:25:47 Train INFO: [Train]: [048][00050/00099]  Loss=0.3281  cls_loss=0.1718  reg_loss=0.1563  lr_backbone=5.7e-05  lr_det=5.7e-05  mem=7010MB
+2025-09-25 17:27:36 Train INFO: [Train]: [048][00099/00099]  Loss=0.3282  cls_loss=0.1696  reg_loss=0.1586  lr_backbone=5.6e-05  lr_det=5.6e-05  mem=7010MB
+2025-09-25 17:40:41 Train INFO: Evaluation starts...
+2025-09-25 17:41:03 Train INFO: Loaded annotations from validation subset.
+2025-09-25 17:41:03 Train INFO: Number of ground truth instances: 3325
+2025-09-25 17:41:03 Train INFO: Number of predictions: 422000
+2025-09-25 17:41:03 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 17:41:03 Train INFO: Average-mAP: 72.57 (%)
+2025-09-25 17:41:03 Train INFO: mAP at tIoU 0.30 is 88.27%
+2025-09-25 17:41:03 Train INFO: mAP at tIoU 0.40 is 84.42%
+2025-09-25 17:41:03 Train INFO: mAP at tIoU 0.50 is 76.91%
+2025-09-25 17:41:03 Train INFO: mAP at tIoU 0.60 is 63.89%
+2025-09-25 17:41:03 Train INFO: mAP at tIoU 0.70 is 49.34%
+2025-09-25 17:41:03 Train INFO: [Train]: Epoch 49 started
+2025-09-25 17:43:08 Train INFO: [Train]: [049][00050/00099]  Loss=0.3423  cls_loss=0.1800  reg_loss=0.1623  lr_backbone=5.5e-05  lr_det=5.5e-05  mem=7010MB
+2025-09-25 17:44:54 Train INFO: [Train]: [049][00099/00099]  Loss=0.3768  cls_loss=0.1976  reg_loss=0.1792  lr_backbone=5.4e-05  lr_det=5.4e-05  mem=7010MB
+2025-09-25 17:57:58 Train INFO: Evaluation starts...
+2025-09-25 17:58:20 Train INFO: Loaded annotations from validation subset.
+2025-09-25 17:58:20 Train INFO: Number of ground truth instances: 3325
+2025-09-25 17:58:20 Train INFO: Number of predictions: 422000
+2025-09-25 17:58:20 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 17:58:20 Train INFO: Average-mAP: 72.77 (%)
+2025-09-25 17:58:20 Train INFO: mAP at tIoU 0.30 is 88.37%
+2025-09-25 17:58:20 Train INFO: mAP at tIoU 0.40 is 84.55%
+2025-09-25 17:58:20 Train INFO: mAP at tIoU 0.50 is 77.24%
+2025-09-25 17:58:20 Train INFO: mAP at tIoU 0.60 is 64.24%
+2025-09-25 17:58:20 Train INFO: mAP at tIoU 0.70 is 49.47%
+2025-09-25 17:58:20 Train INFO: [Train]: Epoch 50 started
+2025-09-25 18:00:20 Train INFO: [Train]: [050][00050/00099]  Loss=0.3847  cls_loss=0.2035  reg_loss=0.1812  lr_backbone=5.3e-05  lr_det=5.3e-05  mem=7010MB
+2025-09-25 18:02:17 Train INFO: [Train]: [050][00099/00099]  Loss=0.3302  cls_loss=0.1704  reg_loss=0.1598  lr_backbone=5.3e-05  lr_det=5.3e-05  mem=7010MB
+2025-09-25 18:15:18 Train INFO: Evaluation starts...
+2025-09-25 18:15:39 Train INFO: Loaded annotations from validation subset.
+2025-09-25 18:15:39 Train INFO: Number of ground truth instances: 3325
+2025-09-25 18:15:39 Train INFO: Number of predictions: 422000
+2025-09-25 18:15:39 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 18:15:39 Train INFO: Average-mAP: 72.60 (%)
+2025-09-25 18:15:39 Train INFO: mAP at tIoU 0.30 is 88.30%
+2025-09-25 18:15:39 Train INFO: mAP at tIoU 0.40 is 84.28%
+2025-09-25 18:15:39 Train INFO: mAP at tIoU 0.50 is 77.27%
+2025-09-25 18:15:39 Train INFO: mAP at tIoU 0.60 is 63.95%
+2025-09-25 18:15:39 Train INFO: mAP at tIoU 0.70 is 49.20%
+2025-09-25 18:15:39 Train INFO: [Train]: Epoch 51 started
+2025-09-25 18:17:37 Train INFO: [Train]: [051][00050/00099]  Loss=0.3750  cls_loss=0.1932  reg_loss=0.1818  lr_backbone=5.2e-05  lr_det=5.2e-05  mem=7010MB
+2025-09-25 18:19:33 Train INFO: [Train]: [051][00099/00099]  Loss=0.3362  cls_loss=0.1732  reg_loss=0.1630  lr_backbone=5.1e-05  lr_det=5.1e-05  mem=7010MB
+2025-09-25 18:32:34 Train INFO: Evaluation starts...
+2025-09-25 18:32:55 Train INFO: Loaded annotations from validation subset.
+2025-09-25 18:32:55 Train INFO: Number of ground truth instances: 3325
+2025-09-25 18:32:55 Train INFO: Number of predictions: 422000
+2025-09-25 18:32:55 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 18:32:55 Train INFO: Average-mAP: 72.54 (%)
+2025-09-25 18:32:55 Train INFO: mAP at tIoU 0.30 is 88.30%
+2025-09-25 18:32:55 Train INFO: mAP at tIoU 0.40 is 84.24%
+2025-09-25 18:32:55 Train INFO: mAP at tIoU 0.50 is 77.22%
+2025-09-25 18:32:55 Train INFO: mAP at tIoU 0.60 is 63.77%
+2025-09-25 18:32:55 Train INFO: mAP at tIoU 0.70 is 49.17%
+2025-09-25 18:32:55 Train INFO: [Train]: Epoch 52 started
+2025-09-25 18:34:55 Train INFO: [Train]: [052][00050/00099]  Loss=0.3198  cls_loss=0.1641  reg_loss=0.1557  lr_backbone=5.0e-05  lr_det=5.0e-05  mem=7010MB
+2025-09-25 18:36:48 Train INFO: [Train]: [052][00099/00099]  Loss=0.3376  cls_loss=0.1734  reg_loss=0.1641  lr_backbone=4.9e-05  lr_det=4.9e-05  mem=7010MB
+2025-09-25 18:49:45 Train INFO: Evaluation starts...
+2025-09-25 18:50:07 Train INFO: Loaded annotations from validation subset.
+2025-09-25 18:50:07 Train INFO: Number of ground truth instances: 3325
+2025-09-25 18:50:07 Train INFO: Number of predictions: 422000
+2025-09-25 18:50:07 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 18:50:07 Train INFO: Average-mAP: 72.54 (%)
+2025-09-25 18:50:07 Train INFO: mAP at tIoU 0.30 is 88.30%
+2025-09-25 18:50:07 Train INFO: mAP at tIoU 0.40 is 84.21%
+2025-09-25 18:50:07 Train INFO: mAP at tIoU 0.50 is 77.49%
+2025-09-25 18:50:07 Train INFO: mAP at tIoU 0.60 is 63.79%
+2025-09-25 18:50:07 Train INFO: mAP at tIoU 0.70 is 48.93%
+2025-09-25 18:50:07 Train INFO: [Train]: Epoch 53 started
+2025-09-25 18:52:02 Train INFO: [Train]: [053][00050/00099]  Loss=0.3631  cls_loss=0.1903  reg_loss=0.1728  lr_backbone=4.8e-05  lr_det=4.8e-05  mem=7010MB
+2025-09-25 18:53:58 Train INFO: [Train]: [053][00099/00099]  Loss=0.3212  cls_loss=0.1674  reg_loss=0.1538  lr_backbone=4.8e-05  lr_det=4.8e-05  mem=7010MB
+2025-09-25 19:07:03 Train INFO: Evaluation starts...
+2025-09-25 19:07:25 Train INFO: Loaded annotations from validation subset.
+2025-09-25 19:07:25 Train INFO: Number of ground truth instances: 3325
+2025-09-25 19:07:25 Train INFO: Number of predictions: 422000
+2025-09-25 19:07:25 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 19:07:25 Train INFO: Average-mAP: 72.44 (%)
+2025-09-25 19:07:25 Train INFO: mAP at tIoU 0.30 is 88.21%
+2025-09-25 19:07:25 Train INFO: mAP at tIoU 0.40 is 84.17%
+2025-09-25 19:07:25 Train INFO: mAP at tIoU 0.50 is 77.19%
+2025-09-25 19:07:25 Train INFO: mAP at tIoU 0.60 is 63.48%
+2025-09-25 19:07:25 Train INFO: mAP at tIoU 0.70 is 49.15%
+2025-09-25 19:07:25 Train INFO: [Train]: Epoch 54 started
+2025-09-25 19:09:26 Train INFO: [Train]: [054][00050/00099]  Loss=0.3644  cls_loss=0.1870  reg_loss=0.1774  lr_backbone=4.7e-05  lr_det=4.7e-05  mem=7010MB
+2025-09-25 19:11:21 Train INFO: [Train]: [054][00099/00099]  Loss=0.3298  cls_loss=0.1710  reg_loss=0.1588  lr_backbone=4.6e-05  lr_det=4.6e-05  mem=7010MB
+2025-09-25 19:24:20 Train INFO: Evaluation starts...
+2025-09-25 19:24:41 Train INFO: Loaded annotations from validation subset.
+2025-09-25 19:24:41 Train INFO: Number of ground truth instances: 3325
+2025-09-25 19:24:41 Train INFO: Number of predictions: 422000
+2025-09-25 19:24:41 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 19:24:41 Train INFO: Average-mAP: 72.52 (%)
+2025-09-25 19:24:41 Train INFO: mAP at tIoU 0.30 is 88.33%
+2025-09-25 19:24:41 Train INFO: mAP at tIoU 0.40 is 84.28%
+2025-09-25 19:24:41 Train INFO: mAP at tIoU 0.50 is 77.08%
+2025-09-25 19:24:41 Train INFO: mAP at tIoU 0.60 is 63.45%
+2025-09-25 19:24:41 Train INFO: mAP at tIoU 0.70 is 49.46%
+2025-09-25 19:24:42 Train INFO: [Train]: Epoch 55 started
+2025-09-25 19:26:41 Train INFO: [Train]: [055][00050/00099]  Loss=0.3254  cls_loss=0.1678  reg_loss=0.1575  lr_backbone=4.5e-05  lr_det=4.5e-05  mem=7010MB
+2025-09-25 19:28:32 Train INFO: [Train]: [055][00099/00099]  Loss=0.3423  cls_loss=0.1751  reg_loss=0.1672  lr_backbone=4.4e-05  lr_det=4.4e-05  mem=7010MB
+2025-09-25 19:41:32 Train INFO: Evaluation starts...
+2025-09-25 19:41:53 Train INFO: Loaded annotations from validation subset.
+2025-09-25 19:41:53 Train INFO: Number of ground truth instances: 3325
+2025-09-25 19:41:53 Train INFO: Number of predictions: 422000
+2025-09-25 19:41:53 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 19:41:53 Train INFO: Average-mAP: 72.35 (%)
+2025-09-25 19:41:53 Train INFO: mAP at tIoU 0.30 is 88.14%
+2025-09-25 19:41:53 Train INFO: mAP at tIoU 0.40 is 84.31%
+2025-09-25 19:41:53 Train INFO: mAP at tIoU 0.50 is 76.67%
+2025-09-25 19:41:53 Train INFO: mAP at tIoU 0.60 is 63.40%
+2025-09-25 19:41:53 Train INFO: mAP at tIoU 0.70 is 49.26%
+2025-09-25 19:41:53 Train INFO: [Train]: Epoch 56 started
+2025-09-25 19:43:56 Train INFO: [Train]: [056][00050/00099]  Loss=0.3213  cls_loss=0.1639  reg_loss=0.1575  lr_backbone=4.3e-05  lr_det=4.3e-05  mem=7010MB
+2025-09-25 19:45:50 Train INFO: [Train]: [056][00099/00099]  Loss=0.3435  cls_loss=0.1789  reg_loss=0.1646  lr_backbone=4.3e-05  lr_det=4.3e-05  mem=7010MB
+2025-09-25 19:58:54 Train INFO: Evaluation starts...
+2025-09-25 19:59:16 Train INFO: Loaded annotations from validation subset.
+2025-09-25 19:59:16 Train INFO: Number of ground truth instances: 3325
+2025-09-25 19:59:16 Train INFO: Number of predictions: 422000
+2025-09-25 19:59:16 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 19:59:16 Train INFO: Average-mAP: 72.17 (%)
+2025-09-25 19:59:16 Train INFO: mAP at tIoU 0.30 is 88.08%
+2025-09-25 19:59:16 Train INFO: mAP at tIoU 0.40 is 84.24%
+2025-09-25 19:59:16 Train INFO: mAP at tIoU 0.50 is 76.32%
+2025-09-25 19:59:16 Train INFO: mAP at tIoU 0.60 is 63.11%
+2025-09-25 19:59:16 Train INFO: mAP at tIoU 0.70 is 49.10%
+2025-09-25 19:59:16 Train INFO: [Train]: Epoch 57 started
+2025-09-25 20:01:19 Train INFO: [Train]: [057][00050/00099]  Loss=0.2852  cls_loss=0.1496  reg_loss=0.1356  lr_backbone=4.2e-05  lr_det=4.2e-05  mem=7010MB
+2025-09-25 20:03:08 Train INFO: [Train]: [057][00099/00099]  Loss=0.3417  cls_loss=0.1754  reg_loss=0.1662  lr_backbone=4.1e-05  lr_det=4.1e-05  mem=7010MB
+2025-09-25 20:16:12 Train INFO: Evaluation starts...
+2025-09-25 20:16:34 Train INFO: Loaded annotations from validation subset.
+2025-09-25 20:16:34 Train INFO: Number of ground truth instances: 3325
+2025-09-25 20:16:34 Train INFO: Number of predictions: 422000
+2025-09-25 20:16:34 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 20:16:34 Train INFO: Average-mAP: 72.12 (%)
+2025-09-25 20:16:34 Train INFO: mAP at tIoU 0.30 is 87.91%
+2025-09-25 20:16:34 Train INFO: mAP at tIoU 0.40 is 84.33%
+2025-09-25 20:16:34 Train INFO: mAP at tIoU 0.50 is 76.34%
+2025-09-25 20:16:34 Train INFO: mAP at tIoU 0.60 is 62.87%
+2025-09-25 20:16:34 Train INFO: mAP at tIoU 0.70 is 49.15%
+2025-09-25 20:16:34 Train INFO: [Train]: Epoch 58 started
+2025-09-25 20:18:31 Train INFO: [Train]: [058][00050/00099]  Loss=0.3623  cls_loss=0.1824  reg_loss=0.1798  lr_backbone=4.0e-05  lr_det=4.0e-05  mem=7010MB
+2025-09-25 20:20:24 Train INFO: [Train]: [058][00099/00099]  Loss=0.3602  cls_loss=0.1876  reg_loss=0.1725  lr_backbone=3.9e-05  lr_det=3.9e-05  mem=7010MB
+2025-09-25 20:33:21 Train INFO: Evaluation starts...
+2025-09-25 20:33:42 Train INFO: Loaded annotations from validation subset.
+2025-09-25 20:33:42 Train INFO: Number of ground truth instances: 3325
+2025-09-25 20:33:42 Train INFO: Number of predictions: 422000
+2025-09-25 20:33:42 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 20:33:42 Train INFO: Average-mAP: 71.91 (%)
+2025-09-25 20:33:42 Train INFO: mAP at tIoU 0.30 is 87.79%
+2025-09-25 20:33:42 Train INFO: mAP at tIoU 0.40 is 84.32%
+2025-09-25 20:33:42 Train INFO: mAP at tIoU 0.50 is 76.05%
+2025-09-25 20:33:42 Train INFO: mAP at tIoU 0.60 is 62.53%
+2025-09-25 20:33:42 Train INFO: mAP at tIoU 0.70 is 48.85%
+2025-09-25 20:33:43 Train INFO: [Train]: Epoch 59 started
+2025-09-25 20:35:43 Train INFO: [Train]: [059][00050/00099]  Loss=0.3378  cls_loss=0.1809  reg_loss=0.1569  lr_backbone=3.9e-05  lr_det=3.9e-05  mem=7010MB
+2025-09-25 20:37:33 Train INFO: [Train]: [059][00099/00099]  Loss=0.3381  cls_loss=0.1754  reg_loss=0.1627  lr_backbone=3.8e-05  lr_det=3.8e-05  mem=7010MB
+2025-09-25 20:50:37 Train INFO: Evaluation starts...
+2025-09-25 20:50:58 Train INFO: Loaded annotations from validation subset.
+2025-09-25 20:50:58 Train INFO: Number of ground truth instances: 3325
+2025-09-25 20:50:58 Train INFO: Number of predictions: 422000
+2025-09-25 20:50:58 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 20:50:58 Train INFO: Average-mAP: 71.97 (%)
+2025-09-25 20:50:58 Train INFO: mAP at tIoU 0.30 is 87.70%
+2025-09-25 20:50:58 Train INFO: mAP at tIoU 0.40 is 84.29%
+2025-09-25 20:50:58 Train INFO: mAP at tIoU 0.50 is 76.13%
+2025-09-25 20:50:58 Train INFO: mAP at tIoU 0.60 is 62.57%
+2025-09-25 20:50:58 Train INFO: mAP at tIoU 0.70 is 49.16%
+2025-09-25 20:50:58 Train INFO: [Train]: Epoch 60 started
+2025-09-25 20:52:58 Train INFO: [Train]: [060][00050/00099]  Loss=0.2774  cls_loss=0.1459  reg_loss=0.1316  lr_backbone=3.7e-05  lr_det=3.7e-05  mem=7010MB
+2025-09-25 20:54:54 Train INFO: [Train]: [060][00099/00099]  Loss=0.3334  cls_loss=0.1699  reg_loss=0.1636  lr_backbone=3.6e-05  lr_det=3.6e-05  mem=7010MB
+2025-09-25 21:07:51 Train INFO: Evaluation starts...
+2025-09-25 21:08:11 Train INFO: Loaded annotations from validation subset.
+2025-09-25 21:08:11 Train INFO: Number of ground truth instances: 3325
+2025-09-25 21:08:11 Train INFO: Number of predictions: 422000
+2025-09-25 21:08:11 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 21:08:11 Train INFO: Average-mAP: 71.89 (%)
+2025-09-25 21:08:11 Train INFO: mAP at tIoU 0.30 is 87.62%
+2025-09-25 21:08:11 Train INFO: mAP at tIoU 0.40 is 84.16%
+2025-09-25 21:08:11 Train INFO: mAP at tIoU 0.50 is 75.96%
+2025-09-25 21:08:11 Train INFO: mAP at tIoU 0.60 is 62.63%
+2025-09-25 21:08:11 Train INFO: mAP at tIoU 0.70 is 49.10%
+2025-09-25 21:08:12 Train INFO: [Train]: Epoch 61 started
+2025-09-25 21:10:09 Train INFO: [Train]: [061][00050/00099]  Loss=0.2798  cls_loss=0.1411  reg_loss=0.1387  lr_backbone=3.5e-05  lr_det=3.5e-05  mem=7010MB
+2025-09-25 21:12:00 Train INFO: [Train]: [061][00099/00099]  Loss=0.2869  cls_loss=0.1455  reg_loss=0.1415  lr_backbone=3.5e-05  lr_det=3.5e-05  mem=7010MB
+2025-09-25 21:25:02 Train INFO: Evaluation starts...
+2025-09-25 21:25:22 Train INFO: Loaded annotations from validation subset.
+2025-09-25 21:25:22 Train INFO: Number of ground truth instances: 3325
+2025-09-25 21:25:22 Train INFO: Number of predictions: 422000
+2025-09-25 21:25:22 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 21:25:22 Train INFO: Average-mAP: 71.87 (%)
+2025-09-25 21:25:22 Train INFO: mAP at tIoU 0.30 is 87.62%
+2025-09-25 21:25:22 Train INFO: mAP at tIoU 0.40 is 84.02%
+2025-09-25 21:25:22 Train INFO: mAP at tIoU 0.50 is 75.96%
+2025-09-25 21:25:22 Train INFO: mAP at tIoU 0.60 is 62.60%
+2025-09-25 21:25:22 Train INFO: mAP at tIoU 0.70 is 49.15%
+2025-09-25 21:25:23 Train INFO: [Train]: Epoch 62 started
+2025-09-25 21:27:27 Train INFO: [Train]: [062][00050/00099]  Loss=0.3253  cls_loss=0.1631  reg_loss=0.1622  lr_backbone=3.4e-05  lr_det=3.4e-05  mem=7010MB
+2025-09-25 21:29:17 Train INFO: [Train]: [062][00099/00099]  Loss=0.3263  cls_loss=0.1675  reg_loss=0.1588  lr_backbone=3.3e-05  lr_det=3.3e-05  mem=7010MB
+2025-09-25 21:42:14 Train INFO: Evaluation starts...
+2025-09-25 21:42:35 Train INFO: Loaded annotations from validation subset.
+2025-09-25 21:42:35 Train INFO: Number of ground truth instances: 3325
+2025-09-25 21:42:35 Train INFO: Number of predictions: 422000
+2025-09-25 21:42:35 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 21:42:35 Train INFO: Average-mAP: 71.76 (%)
+2025-09-25 21:42:35 Train INFO: mAP at tIoU 0.30 is 87.62%
+2025-09-25 21:42:35 Train INFO: mAP at tIoU 0.40 is 83.91%
+2025-09-25 21:42:35 Train INFO: mAP at tIoU 0.50 is 75.83%
+2025-09-25 21:42:35 Train INFO: mAP at tIoU 0.60 is 62.39%
+2025-09-25 21:42:35 Train INFO: mAP at tIoU 0.70 is 49.07%
+2025-09-25 21:42:35 Train INFO: [Train]: Epoch 63 started
+2025-09-25 21:44:38 Train INFO: [Train]: [063][00050/00099]  Loss=0.2963  cls_loss=0.1515  reg_loss=0.1448  lr_backbone=3.2e-05  lr_det=3.2e-05  mem=7010MB
+2025-09-25 21:46:29 Train INFO: [Train]: [063][00099/00099]  Loss=0.2982  cls_loss=0.1520  reg_loss=0.1462  lr_backbone=3.1e-05  lr_det=3.1e-05  mem=7010MB
+2025-09-25 21:59:32 Train INFO: Evaluation starts...
+2025-09-25 21:59:52 Train INFO: Loaded annotations from validation subset.
+2025-09-25 21:59:52 Train INFO: Number of ground truth instances: 3325
+2025-09-25 21:59:52 Train INFO: Number of predictions: 422000
+2025-09-25 21:59:52 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 21:59:52 Train INFO: Average-mAP: 71.81 (%)
+2025-09-25 21:59:52 Train INFO: mAP at tIoU 0.30 is 87.43%
+2025-09-25 21:59:52 Train INFO: mAP at tIoU 0.40 is 83.98%
+2025-09-25 21:59:52 Train INFO: mAP at tIoU 0.50 is 75.91%
+2025-09-25 21:59:52 Train INFO: mAP at tIoU 0.60 is 62.50%
+2025-09-25 21:59:52 Train INFO: mAP at tIoU 0.70 is 49.23%
+2025-09-25 21:59:52 Train INFO: [Train]: Epoch 64 started
+2025-09-25 22:01:51 Train INFO: [Train]: [064][00050/00099]  Loss=0.3099  cls_loss=0.1632  reg_loss=0.1466  lr_backbone=3.1e-05  lr_det=3.1e-05  mem=7010MB
+2025-09-25 22:03:43 Train INFO: [Train]: [064][00099/00099]  Loss=0.2988  cls_loss=0.1552  reg_loss=0.1436  lr_backbone=3.0e-05  lr_det=3.0e-05  mem=7010MB
+2025-09-25 22:16:41 Train INFO: Evaluation starts...
+2025-09-25 22:17:01 Train INFO: Loaded annotations from validation subset.
+2025-09-25 22:17:01 Train INFO: Number of ground truth instances: 3325
+2025-09-25 22:17:01 Train INFO: Number of predictions: 422000
+2025-09-25 22:17:01 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 22:17:01 Train INFO: Average-mAP: 71.87 (%)
+2025-09-25 22:17:01 Train INFO: mAP at tIoU 0.30 is 87.38%
+2025-09-25 22:17:01 Train INFO: mAP at tIoU 0.40 is 83.88%
+2025-09-25 22:17:01 Train INFO: mAP at tIoU 0.50 is 75.94%
+2025-09-25 22:17:01 Train INFO: mAP at tIoU 0.60 is 62.88%
+2025-09-25 22:17:01 Train INFO: mAP at tIoU 0.70 is 49.26%
+2025-09-25 22:17:02 Train INFO: [Train]: Epoch 65 started
+2025-09-25 22:19:03 Train INFO: [Train]: [065][00050/00099]  Loss=0.2856  cls_loss=0.1445  reg_loss=0.1411  lr_backbone=2.9e-05  lr_det=2.9e-05  mem=7010MB
+2025-09-25 22:20:52 Train INFO: [Train]: [065][00099/00099]  Loss=0.2869  cls_loss=0.1477  reg_loss=0.1392  lr_backbone=2.8e-05  lr_det=2.8e-05  mem=7010MB
+2025-09-25 22:33:55 Train INFO: Evaluation starts...
+2025-09-25 22:34:16 Train INFO: Loaded annotations from validation subset.
+2025-09-25 22:34:16 Train INFO: Number of ground truth instances: 3325
+2025-09-25 22:34:16 Train INFO: Number of predictions: 422000
+2025-09-25 22:34:16 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 22:34:16 Train INFO: Average-mAP: 71.79 (%)
+2025-09-25 22:34:16 Train INFO: mAP at tIoU 0.30 is 87.30%
+2025-09-25 22:34:16 Train INFO: mAP at tIoU 0.40 is 83.79%
+2025-09-25 22:34:16 Train INFO: mAP at tIoU 0.50 is 75.85%
+2025-09-25 22:34:16 Train INFO: mAP at tIoU 0.60 is 62.85%
+2025-09-25 22:34:16 Train INFO: mAP at tIoU 0.70 is 49.13%
+2025-09-25 22:34:16 Train INFO: [Train]: Epoch 66 started
+2025-09-25 22:36:29 Train INFO: [Train]: [066][00050/00099]  Loss=0.3003  cls_loss=0.1474  reg_loss=0.1529  lr_backbone=2.8e-05  lr_det=2.8e-05  mem=7010MB
+2025-09-25 22:38:20 Train INFO: [Train]: [066][00099/00099]  Loss=0.2974  cls_loss=0.1497  reg_loss=0.1477  lr_backbone=2.7e-05  lr_det=2.7e-05  mem=7010MB
+2025-09-25 22:51:14 Train INFO: Evaluation starts...
+2025-09-25 22:51:35 Train INFO: Loaded annotations from validation subset.
+2025-09-25 22:51:35 Train INFO: Number of ground truth instances: 3325
+2025-09-25 22:51:35 Train INFO: Number of predictions: 422000
+2025-09-25 22:51:35 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 22:51:35 Train INFO: Average-mAP: 71.77 (%)
+2025-09-25 22:51:35 Train INFO: mAP at tIoU 0.30 is 87.37%
+2025-09-25 22:51:35 Train INFO: mAP at tIoU 0.40 is 83.83%
+2025-09-25 22:51:35 Train INFO: mAP at tIoU 0.50 is 75.87%
+2025-09-25 22:51:35 Train INFO: mAP at tIoU 0.60 is 62.65%
+2025-09-25 22:51:35 Train INFO: mAP at tIoU 0.70 is 49.13%
+2025-09-25 22:51:35 Train INFO: [Train]: Epoch 67 started
+2025-09-25 22:53:30 Train INFO: [Train]: [067][00050/00099]  Loss=0.2707  cls_loss=0.1365  reg_loss=0.1342  lr_backbone=2.6e-05  lr_det=2.6e-05  mem=7010MB
+2025-09-25 22:55:22 Train INFO: [Train]: [067][00099/00099]  Loss=0.2822  cls_loss=0.1441  reg_loss=0.1380  lr_backbone=2.6e-05  lr_det=2.6e-05  mem=7010MB
+2025-09-25 23:08:20 Train INFO: Evaluation starts...
+2025-09-25 23:08:41 Train INFO: Loaded annotations from validation subset.
+2025-09-25 23:08:41 Train INFO: Number of ground truth instances: 3325
+2025-09-25 23:08:41 Train INFO: Number of predictions: 422000
+2025-09-25 23:08:41 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 23:08:41 Train INFO: Average-mAP: 71.68 (%)
+2025-09-25 23:08:41 Train INFO: mAP at tIoU 0.30 is 87.40%
+2025-09-25 23:08:41 Train INFO: mAP at tIoU 0.40 is 83.66%
+2025-09-25 23:08:41 Train INFO: mAP at tIoU 0.50 is 75.66%
+2025-09-25 23:08:41 Train INFO: mAP at tIoU 0.60 is 62.87%
+2025-09-25 23:08:41 Train INFO: mAP at tIoU 0.70 is 48.82%
+2025-09-25 23:08:42 Train INFO: [Train]: Epoch 68 started
+2025-09-25 23:10:35 Train INFO: [Train]: [068][00050/00099]  Loss=0.2749  cls_loss=0.1394  reg_loss=0.1355  lr_backbone=2.5e-05  lr_det=2.5e-05  mem=7010MB
+2025-09-25 23:12:29 Train INFO: [Train]: [068][00099/00099]  Loss=0.2624  cls_loss=0.1349  reg_loss=0.1275  lr_backbone=2.4e-05  lr_det=2.4e-05  mem=7010MB
+2025-09-25 23:25:29 Train INFO: Evaluation starts...
+2025-09-25 23:25:50 Train INFO: Loaded annotations from validation subset.
+2025-09-25 23:25:50 Train INFO: Number of ground truth instances: 3325
+2025-09-25 23:25:50 Train INFO: Number of predictions: 422000
+2025-09-25 23:25:50 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 23:25:50 Train INFO: Average-mAP: 71.62 (%)
+2025-09-25 23:25:50 Train INFO: mAP at tIoU 0.30 is 87.27%
+2025-09-25 23:25:50 Train INFO: mAP at tIoU 0.40 is 83.65%
+2025-09-25 23:25:50 Train INFO: mAP at tIoU 0.50 is 75.84%
+2025-09-25 23:25:50 Train INFO: mAP at tIoU 0.60 is 62.58%
+2025-09-25 23:25:50 Train INFO: mAP at tIoU 0.70 is 48.77%
+2025-09-25 23:25:50 Train INFO: [Train]: Epoch 69 started
+2025-09-25 23:27:51 Train INFO: [Train]: [069][00050/00099]  Loss=0.3371  cls_loss=0.1652  reg_loss=0.1719  lr_backbone=2.3e-05  lr_det=2.3e-05  mem=7010MB
+2025-09-25 23:29:40 Train INFO: [Train]: [069][00099/00099]  Loss=0.2808  cls_loss=0.1405  reg_loss=0.1404  lr_backbone=2.3e-05  lr_det=2.3e-05  mem=7010MB
+2025-09-25 23:42:42 Train INFO: Evaluation starts...
+2025-09-25 23:43:03 Train INFO: Loaded annotations from validation subset.
+2025-09-25 23:43:03 Train INFO: Number of ground truth instances: 3325
+2025-09-25 23:43:03 Train INFO: Number of predictions: 422000
+2025-09-25 23:43:03 Train INFO: Fixed threshold for tiou score: [0.3, 0.4, 0.5, 0.6, 0.7]
+2025-09-25 23:43:03 Train INFO: Average-mAP: 71.56 (%)
+2025-09-25 23:43:03 Train INFO: mAP at tIoU 0.30 is 87.08%
+2025-09-25 23:43:03 Train INFO: mAP at tIoU 0.40 is 83.58%
+2025-09-25 23:43:03 Train INFO: mAP at tIoU 0.50 is 75.94%
+2025-09-25 23:43:03 Train INFO: mAP at tIoU 0.60 is 62.42%
+2025-09-25 23:43:03 Train INFO: mAP at tIoU 0.70 is 48.78%
+2025-09-25 23:43:03 Train INFO: Training Over...
+
+
+
